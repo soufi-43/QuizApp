@@ -1,14 +1,149 @@
 import 'package:flutter/material.dart';
-
+import 'package:quizapp/services/database.dart';
+import 'package:quizapp/widgets/widgets.dart';
 
 class AddQuestion extends StatefulWidget {
+  final String quizId;
+
+  AddQuestion(this.quizId);
+
   @override
   _AddQuestionState createState() => _AddQuestionState();
 }
 
 class _AddQuestionState extends State<AddQuestion> {
+  final _formKey = GlobalKey<FormState>();
+  String question, option1, option2, option3, option4;
+  bool _isLoading = false;
+
+  DataBaseService dataBaseService = new DataBaseService();
+
+  uploadQuestionData() async {
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      Map<String, String> questionMap = {
+        "question": question,
+        "option1": option1,
+        "option2": option2,
+        "option3": option3,
+        "option4": option4,
+      };
+
+      await dataBaseService
+          .addQuestionData(questionMap, widget.quizId)
+          .then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: appBar(context),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black87),
+        brightness: Brightness.light,
+        //brightness: Brightness.li,
+      ),
+      body: _isLoading
+          ? Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : Form(
+        key: _formKey,
+            child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      validator: (val) => val.isEmpty ? "enter Question" : null,
+                      decoration: InputDecoration(hintText: "Question"),
+                      onChanged: (val) {
+                        question = val;
+                      },
+                    ),
+                    SizedBox(
+                      height: 6,
+                    ),
+                    TextFormField(
+                      validator: (val) => val.isEmpty ? "enter Option1" : null,
+                      decoration:
+                          InputDecoration(hintText: "Option1 ('Correct Answer')"),
+                      onChanged: (val) {
+                        option1 = val;
+                      },
+                    ),
+                    SizedBox(
+                      height: 6,
+                    ),
+                    TextFormField(
+                      validator: (val) => val.isEmpty ? "enter Option2" : null,
+                      decoration: InputDecoration(hintText: "Option2"),
+                      onChanged: (val) {
+                        option2 = val;
+                      },
+                    ),
+                    TextFormField(
+                      validator: (val) => val.isEmpty ? "enter Option3" : null,
+                      decoration: InputDecoration(hintText: "Option3"),
+                      onChanged: (val) {
+                        option3 = val;
+                      },
+                    ),
+                    TextFormField(
+                      validator: (val) => val.isEmpty ? "enter Option4" : null,
+                      decoration: InputDecoration(hintText: "Option4"),
+                      onChanged: (val) {
+                        option4 = val;
+                      },
+                    ),
+                    Spacer(),
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: blueButton(
+                            context: context,
+                            label: 'Submit',
+                            buttonWidth:
+                                MediaQuery.of(context).size.width / 2.7 - 24 + 5,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 24,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            uploadQuestionData();
+                          },
+                          child: blueButton(
+                            context: context,
+                            label: 'Add Question',
+                            buttonWidth:
+                                MediaQuery.of(context).size.width / 2 - 30,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
+                ),
+              ),
+          ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quizapp/helper/functions.dart';
 import 'package:quizapp/services/auth.dart';
 import 'package:quizapp/views/signin.dart';
 import 'package:quizapp/widgets/widgets.dart';
@@ -35,6 +36,8 @@ class _SignUpState extends State<SignUp> {
         setState(() {
           _isLoading =false;
         });
+        HelperFunctions.saveUserLoggedInDetails(isLoggedin: true);
+
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Home()));
 
       }
@@ -114,7 +117,7 @@ class _SignUpState extends State<SignUp> {
                   Home();
 
                 },
-                child:blueButton(context,'Sign Up'),
+                child:blueButton(context:context,label:'Sign Up'),
               ),
               SizedBox(
                 height: 18,
